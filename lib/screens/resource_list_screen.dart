@@ -13,15 +13,31 @@ class ResourceListScreen extends StatefulWidget {
 }
 
 class _ResourceListScreenState extends State<ResourceListScreen> {
-  late Future<List<Map<String, dynamic>>> _future;
+  bool _loading = true;
+  String? _error;
+  List<Map<String, dynamic>> _items = [];
+  bool get _reorderable => widget.config.fields.any((f) => f.key == 'sort_order');
 
   @override
   void initState() {
     super.initState();
-    _future = ApiClient.instance.list(widget.config.path);
+    _load();
   }
 
-  void _reload() => setState(() => _future = ApiClient.instance.list(widget.config.path));
+  Future<void> _load() async {
+    setState(() {
+      _loading = true;
+      _error = null;
+    });
+    try {
+      final items = await ApiClient.instance.list(widget.config.path);
+      if (mounted) setState(() => _items = items);
+    } catch (e) {
+      if (mounted) setState(() => _error = e.toString());
+    } finally {
+      if (mounted) setState(() => _loading = false);
+    }
+  }
 
   Future<void> _openForm({Map<String, dynamic>? item}) async {
     final saved = await Navigator.of(context).push<bool>(
@@ -36,7 +52,7 @@ class _ResourceListScreenState extends State<ResourceListScreen> {
         ),
       ),
     );
-    if (saved == true) _reload();
+    if (saved == true) _load();
   }
 
   Future<void> _delete(Map<String, dynamic> item) async {
@@ -53,7 +69,19 @@ class _ResourceListScreenState extends State<ResourceListScreen> {
     );
     if (confirmed != true) return;
     await ApiClient.instance.delete('${widget.config.path}/${item['id']}');
-    _reload();
+    _load();
+  }
+
+  Future<void> _reorder(int oldIndex, int newIndex) async {
+    setState(() {
+      if (newIndex > oldIndex) newIndex -= 1;
+      final item = _items.removeAt(oldIndex);
+      _items.insert(newIndex, item);
+    });
+    await Future.wait([
+      for (var i = 0; i < _items.length; i++)
+        ApiClient.instance.update('${widget.config.path}/${_items[i]['id']}', {'sort_order': i}),
+    ]);
   }
 
   @override
@@ -64,41 +92,46 @@ class _ResourceListScreenState extends State<ResourceListScreen> {
         onPressed: () => _openForm(),
         child: const Icon(Icons.add),
       ),
-      body: FutureBuilder<List<Map<String, dynamic>>>(
-        future: _future,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState != ConnectionState.done) {
-            return const Center(child: CircularProgressIndicator());
-          }
-          if (snapshot.hasError) {
-            return Center(child: Text('Failed to load: ${snapshot.error}'));
-          }
-          final items = snapshot.data ?? [];
-          if (items.isEmpty) {
-            return const Center(child: Text('Nothing here yet. Tap + to add one.'));
-          }
-          return RefreshIndicator(
-            onRefresh: () async => _reload(),
-            child: ListView.separated(
-              itemCount: items.length,
-              separatorBuilder: (_, _) => const Divider(height: 1),
-              itemBuilder: (context, index) {
-                final item = items[index];
-                return ListTile(
-                  title: Text(item[widget.config.titleField]?.toString() ?? ''),
-                  subtitle: widget.config.subtitleField != null
-                      ? Text(item[widget.config.subtitleField]?.toString() ?? '')
-                      : null,
-                  onTap: () => _openForm(item: item),
-                  trailing: IconButton(
-                    icon: const Icon(Icons.delete_outline),
-                    onPressed: () => _delete(item),
-                  ),
-                );
-              },
+      body: _loading
+          ? const Center(child: CircularProgressIndicator())
+          : _error != null
+          ? Center(child: Text('Failed to load: $_error'))
+          : _items.isEmpty
+          ? const Center(child: Text('Nothing here yet. Tap + to add one.'))
+          : RefreshIndicator(
+              onRefresh: _load,
+              child: _reorderable
+                  ? ReorderableListView.builder(
+                      itemCount: _items.length,
+                      onReorder: _reorder,
+                      itemBuilder: (context, index) => _buildTile(_items[index], key: true),
+                    )
+                  : ListView.separated(
+                      itemCount: _items.length,
+                      separatorBuilder: (_, _) => const Divider(height: 1),
+                      itemBuilder: (context, index) => _buildTile(_items[index]),
+                    ),
             ),
-          );
-        },
+    );
+  }
+
+  Widget _buildTile(Map<String, dynamic> item, {bool key = false}) {
+    return ListTile(
+      key: key ? ValueKey(item['id']) : null,
+      title: Text(item[widget.config.titleField]?.toString() ?? ''),
+      subtitle: widget.config.subtitleField != null
+          ? Text(item[widget.config.subtitleField]?.toString() ?? '')
+          : null,
+      onTap: () => _openForm(item: item),
+      trailing: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          IconButton(
+            icon: const Icon(Icons.delete_outline),
+            onPressed: () => _delete(item),
+          ),
+          if (_reorderable) const Icon(Icons.drag_handle),
+        ],
       ),
     );
   }
