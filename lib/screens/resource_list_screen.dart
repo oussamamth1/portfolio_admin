@@ -16,7 +16,7 @@ class _ResourceListScreenState extends State<ResourceListScreen> {
   bool _loading = true;
   String? _error;
   List<Map<String, dynamic>> _items = [];
-  bool get _reorderable => widget.config.fields.any((f) => f.key == 'sort_order');
+  bool get _reorderable => widget.config.reorderable;
 
   @override
   void initState() {

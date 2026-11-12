@@ -24,6 +24,7 @@ class ResourceConfig {
     required this.titleField,
     this.subtitleField,
     this.icon = Icons.article_outlined,
+    this.reorderable = true,
   });
 
   final String title;
@@ -32,6 +33,7 @@ class ResourceConfig {
   final String titleField;
   final String? subtitleField;
   final IconData icon;
+  final bool reorderable;
 }
 
 final skillsConfig = ResourceConfig(
@@ -45,7 +47,6 @@ final skillsConfig = ResourceConfig(
     FieldSpec(key: 'subject', label: 'Skill name', type: FieldType.text, required: true),
     FieldSpec(key: 'level', label: 'Level (0-100)', type: FieldType.number, required: true),
     FieldSpec(key: 'icon_key', label: 'Icon key (code / server)', type: FieldType.text),
-    FieldSpec(key: 'sort_order', label: 'Sort order', type: FieldType.number),
   ],
 );
 
@@ -57,7 +58,6 @@ final languagesConfig = ResourceConfig(
   fields: const [
     FieldSpec(key: 'language', label: 'Language', type: FieldType.text, required: true),
     FieldSpec(key: 'level', label: 'Proficiency (0-100)', type: FieldType.number, required: true),
-    FieldSpec(key: 'sort_order', label: 'Sort order', type: FieldType.number),
   ],
 );
 
@@ -76,7 +76,6 @@ final educationConfig = ResourceConfig(
     FieldSpec(key: 'description', label: 'Description', type: FieldType.multilineText),
     FieldSpec(key: 'coursework', label: 'Coursework (comma separated)', type: FieldType.stringList),
     FieldSpec(key: 'achievements', label: 'Achievements (comma separated)', type: FieldType.stringList),
-    FieldSpec(key: 'sort_order', label: 'Sort order', type: FieldType.number),
   ],
 );
 
@@ -95,7 +94,6 @@ final certificationsConfig = ResourceConfig(
     FieldSpec(key: 'description', label: 'Description', type: FieldType.multilineText),
     FieldSpec(key: 'skills', label: 'Skill tags (comma separated)', type: FieldType.stringList),
     FieldSpec(key: 'url', label: 'Credential URL', type: FieldType.url),
-    FieldSpec(key: 'sort_order', label: 'Sort order', type: FieldType.number),
   ],
 );
 
@@ -118,7 +116,6 @@ final internshipsConfig = ResourceConfig(
     FieldSpec(key: 'logo_url', label: 'Company logo', type: FieldType.image),
     FieldSpec(key: 'demo_url', label: 'Demo / app link', type: FieldType.url),
     FieldSpec(key: 'video_id', label: 'YouTube video ID', type: FieldType.text),
-    FieldSpec(key: 'sort_order', label: 'Sort order', type: FieldType.number),
   ],
 );
 
@@ -145,7 +142,6 @@ final projectsConfig = ResourceConfig(
     FieldSpec(key: 'app_store_url', label: 'App Store URL', type: FieldType.url),
     FieldSpec(key: 'play_store_url', label: 'Play Store URL', type: FieldType.url),
     FieldSpec(key: 'video_id', label: 'YouTube video ID', type: FieldType.text),
-    FieldSpec(key: 'sort_order', label: 'Sort order', type: FieldType.number),
   ],
 );
 
