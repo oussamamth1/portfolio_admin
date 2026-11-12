@@ -1,7 +1,10 @@
 import 'dart:typed_data';
-import 'package:supabase_flutter/supabase_flutter.dart';
-import '../config/app_config.dart';
+import 'api_client.dart';
 
+/// Uploads images through the backend's /me/upload endpoint rather than
+/// calling Supabase Storage directly from the client. The backend uses its
+/// service-role key, so the upload always succeeds for any authenticated
+/// user regardless of the Flutter Supabase client's own session/token state.
 class StorageService {
   StorageService._();
   static final instance = StorageService._();
@@ -10,16 +13,12 @@ class StorageService {
     required Uint8List bytes,
     required String fileName,
     String? contentType,
-  }) async {
-    final client = Supabase.instance.client;
-    final path = '${DateTime.now().millisecondsSinceEpoch}_$fileName';
-    await client.storage
-        .from(AppConfig.storageBucket)
-        .uploadBinary(
-          path,
-          bytes,
-          fileOptions: FileOptions(contentType: contentType, upsert: true),
-        );
-    return client.storage.from(AppConfig.storageBucket).getPublicUrl(path);
+  }) {
+    return ApiClient.instance.uploadFile(
+      path: '/me/upload',
+      bytes: bytes,
+      fileName: fileName,
+      contentType: contentType,
+    );
   }
 }

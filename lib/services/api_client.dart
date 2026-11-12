@@ -1,3 +1,4 @@
+import 'dart:typed_data';
 import 'package:dio/dio.dart';
 import '../config/app_config.dart';
 import 'auth_service.dart';
@@ -52,6 +53,23 @@ class ApiClient {
   }
 
   Future<void> delete(String path) => _dio.delete(path);
+
+  Future<String> uploadFile({
+    required String path,
+    required Uint8List bytes,
+    required String fileName,
+    String? contentType,
+  }) async {
+    final formData = FormData.fromMap({
+      'file': MultipartFile.fromBytes(
+        bytes,
+        filename: fileName,
+        contentType: contentType != null ? DioMediaType.parse(contentType) : null,
+      ),
+    });
+    final response = await _dio.post<Map<String, dynamic>>(path, data: formData);
+    return response.data!['url'] as String;
+  }
 }
 
 /// Surfaces the server's error message instead of a raw DioException string.
