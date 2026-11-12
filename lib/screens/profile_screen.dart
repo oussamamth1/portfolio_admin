@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import '../config/app_config.dart';
 import '../models/field_spec.dart';
 import '../services/api_client.dart';
 import '../widgets/dynamic_form.dart';
@@ -66,13 +68,41 @@ class _ProfileScreenState extends State<ProfileScreen> {
           if (snapshot.hasError) {
             return Center(child: Text('Failed to load: ${snapshot.error}'));
           }
+          final username = snapshot.data!['username'] as String?;
+          final publicUrl = username == null
+              ? null
+              : '${AppConfig.publicSiteBaseUrl}/u/$username';
           return Padding(
             padding: const EdgeInsets.all(16),
             child: SingleChildScrollView(
-              child: DynamicForm(
-                fields: profileConfig.fields,
-                initialValues: snapshot.data!,
-                controller: _formController,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  if (publicUrl != null)
+                    Card(
+                      child: ListTile(
+                        leading: const Icon(Icons.link),
+                        title: Text(publicUrl),
+                        subtitle: const Text('Your public portfolio link'),
+                        trailing: IconButton(
+                          icon: const Icon(Icons.copy),
+                          onPressed: () async {
+                            await Clipboard.setData(ClipboardData(text: publicUrl));
+                            if (context.mounted) {
+                              ScaffoldMessenger.of(
+                                context,
+                              ).showSnackBar(const SnackBar(content: Text('Link copied')));
+                            }
+                          },
+                        ),
+                      ),
+                    ),
+                  DynamicForm(
+                    fields: profileConfig.fields,
+                    initialValues: snapshot.data!,
+                    controller: _formController,
+                  ),
+                ],
               ),
             ),
           );
