@@ -154,5 +154,15 @@ final profileConfig = ResourceConfig(
     FieldSpec(key: 'resume_url', label: 'Resume (PDF URL)', type: FieldType.url),
     FieldSpec(key: 'cover_url', label: 'Cover / banner photo', type: FieldType.image),
     FieldSpec(key: 'cover_enabled', label: 'Show cover photo', type: FieldType.boolean),
+    FieldSpec(key: 'linkedin_url', label: 'LinkedIn URL', type: FieldType.url),
+    FieldSpec(key: 'github_url', label: 'GitHub URL', type: FieldType.url),
+    FieldSpec(
+      key: 'whatsapp_url',
+      label: 'WhatsApp (e.g. https://wa.me/21600000000)',
+      type: FieldType.url,
+    ),
+    FieldSpec(key: 'facebook_url', label: 'Facebook URL', type: FieldType.url),
+    FieldSpec(key: 'instagram_url', label: 'Instagram URL', type: FieldType.url),
+    FieldSpec(key: 'twitter_url', label: 'Twitter / X URL', type: FieldType.url),
   ],
 );
