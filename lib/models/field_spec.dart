@@ -32,7 +32,7 @@ class ResourceConfig {
 
 final skillsConfig = ResourceConfig(
   title: 'Skills',
-  path: '/skills',
+  path: '/me/skills',
   titleField: 'subject',
   subtitleField: 'category',
   fields: const [
@@ -46,7 +46,7 @@ final skillsConfig = ResourceConfig(
 
 final educationConfig = ResourceConfig(
   title: 'Education',
-  path: '/education',
+  path: '/me/education',
   titleField: 'institution',
   subtitleField: 'degree',
   fields: const [
@@ -64,7 +64,7 @@ final educationConfig = ResourceConfig(
 
 final certificationsConfig = ResourceConfig(
   title: 'Certifications',
-  path: '/certifications',
+  path: '/me/certifications',
   titleField: 'name',
   subtitleField: 'issuer',
   fields: const [
@@ -82,7 +82,7 @@ final certificationsConfig = ResourceConfig(
 
 final internshipsConfig = ResourceConfig(
   title: 'Experience',
-  path: '/internships',
+  path: '/me/internships',
   titleField: 'company',
   subtitleField: 'role',
   fields: const [
@@ -104,7 +104,7 @@ final internshipsConfig = ResourceConfig(
 
 final projectsConfig = ResourceConfig(
   title: 'Projects',
-  path: '/projects',
+  path: '/me/projects',
   titleField: 'title',
   subtitleField: 'status',
   fields: const [
@@ -130,7 +130,7 @@ final projectsConfig = ResourceConfig(
 
 final profileConfig = ResourceConfig(
   title: 'Hero / Intro',
-  path: '/profile',
+  path: '/me/profile',
   titleField: 'name',
   fields: const [
     FieldSpec(key: 'name', label: 'Name', type: FieldType.text, required: true),
