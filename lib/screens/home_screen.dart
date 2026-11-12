@@ -55,6 +55,11 @@ class _HomeScreenState extends State<HomeScreen> {
       (Icons.palette_outlined, 'Appearance', () => const AppearanceScreen()),
       (Icons.bolt_outlined, skillsConfig.title, () => ResourceListScreen(config: skillsConfig)),
       (
+        Icons.translate_outlined,
+        languagesConfig.title,
+        () => ResourceListScreen(config: languagesConfig),
+      ),
+      (
         Icons.school_outlined,
         educationConfig.title,
         () => ResourceListScreen(config: educationConfig),

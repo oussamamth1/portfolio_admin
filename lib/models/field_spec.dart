@@ -44,6 +44,17 @@ final skillsConfig = ResourceConfig(
   ],
 );
 
+final languagesConfig = ResourceConfig(
+  title: 'Languages',
+  path: '/me/languages',
+  titleField: 'language',
+  fields: const [
+    FieldSpec(key: 'language', label: 'Language', type: FieldType.text, required: true),
+    FieldSpec(key: 'level', label: 'Proficiency (0-100)', type: FieldType.number, required: true),
+    FieldSpec(key: 'sort_order', label: 'Sort order', type: FieldType.number),
+  ],
+);
+
 final educationConfig = ResourceConfig(
   title: 'Education',
   path: '/me/education',
@@ -138,7 +149,10 @@ final profileConfig = ResourceConfig(
     FieldSpec(key: 'tagline', label: 'Tagline', type: FieldType.text),
     FieldSpec(key: 'bio', label: 'Bio', type: FieldType.multilineText),
     FieldSpec(key: 'phone', label: 'Phone (for tel: link)', type: FieldType.text),
+    FieldSpec(key: 'email', label: 'Email (for mailto: link)', type: FieldType.text),
     FieldSpec(key: 'avatar_url', label: 'Avatar', type: FieldType.image),
     FieldSpec(key: 'resume_url', label: 'Resume (PDF URL)', type: FieldType.url),
+    FieldSpec(key: 'cover_url', label: 'Cover / banner photo', type: FieldType.image),
+    FieldSpec(key: 'cover_enabled', label: 'Show cover photo', type: FieldType.boolean),
   ],
 );
