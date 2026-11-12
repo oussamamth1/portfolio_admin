@@ -35,6 +35,20 @@ const _sectionLabels = {
   ),
 };
 
+class _AnimationOption {
+  const _AnimationOption(this.key, this.label, this.icon);
+  final String key;
+  final String label;
+  final IconData icon;
+}
+
+const _animationOptions = [
+  _AnimationOption('none', 'None', Icons.block_outlined),
+  _AnimationOption('fade', 'Fade in', Icons.auto_awesome_outlined),
+  _AnimationOption('particles', 'Particles', Icons.scatter_plot_outlined),
+  _AnimationOption('matrix', 'Matrix rain', Icons.code_outlined),
+];
+
 const _defaultSectionConfig = [
   {'key': 'skills', 'visible': true},
   {'key': 'internships', 'visible': true},
@@ -57,6 +71,7 @@ class _AppearanceScreenState extends State<AppearanceScreen> {
   bool _saving = false;
   String? _error;
   String _theme = 'amber';
+  String _animation = 'none';
   late List<Map<String, dynamic>> _sections;
 
   @override
@@ -74,9 +89,11 @@ class _AppearanceScreenState extends State<AppearanceScreen> {
     try {
       final profile = await ApiClient.instance.getOne('/me/profile');
       final theme = profile['theme'] as String?;
+      final animation = profile['animation'] as String?;
       final rawSections = profile['section_config'] as List<dynamic>?;
       setState(() {
         if (theme != null) _theme = theme;
+        if (animation != null) _animation = animation;
         if (rawSections != null && rawSections.isNotEmpty) {
           _sections = rawSections
               .cast<Map<String, dynamic>>()
@@ -97,6 +114,7 @@ class _AppearanceScreenState extends State<AppearanceScreen> {
     try {
       await ApiClient.instance.update('/me/profile', {
         'theme': _theme,
+        'animation': _animation,
         'section_config': _sections,
       });
       if (mounted) {
@@ -152,6 +170,48 @@ class _AppearanceScreenState extends State<AppearanceScreen> {
                         child: Column(
                           children: [
                             CircleAvatar(radius: 16, backgroundColor: option.color),
+                            const SizedBox(height: 6),
+                            Text(option.label, style: Theme.of(context).textTheme.bodySmall),
+                          ],
+                        ),
+                      ),
+                    );
+                  }).toList(),
+                ),
+                const SizedBox(height: 28),
+                Text('Animation', style: Theme.of(context).textTheme.titleMedium),
+                const SizedBox(height: 4),
+                Text(
+                  'Pick an effect to play on your public page.',
+                  style: Theme.of(context).textTheme.bodySmall,
+                ),
+                const SizedBox(height: 12),
+                Wrap(
+                  spacing: 12,
+                  runSpacing: 12,
+                  children: _animationOptions.map((option) {
+                    final selected = option.key == _animation;
+                    return InkWell(
+                      borderRadius: BorderRadius.circular(12),
+                      onTap: () => setState(() => _animation = option.key),
+                      child: Container(
+                        width: 84,
+                        padding: const EdgeInsets.symmetric(vertical: 10),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                            color: selected
+                                ? Theme.of(context).colorScheme.primary
+                                : Colors.grey.shade300,
+                            width: selected ? 2 : 1,
+                          ),
+                        ),
+                        child: Column(
+                          children: [
+                            Icon(
+                              option.icon,
+                              color: selected ? Theme.of(context).colorScheme.primary : null,
+                            ),
                             const SizedBox(height: 6),
                             Text(option.label, style: Theme.of(context).textTheme.bodySmall),
                           ],

@@ -17,8 +17,6 @@ class AppConfig {
     defaultValue: 'https://portfolio-api-l4on.onrender.com',
   );
 
-  static const storageBucket = 'portfolio-images';
-
   static const publicSiteBaseUrl = String.fromEnvironment(
     'PUBLIC_SITE_BASE_URL',
     defaultValue: 'https://oussamamethnani.vercel.app',
