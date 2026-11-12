@@ -36,6 +36,9 @@ const _sectionLabels = {
     'Certifications',
     Icons.workspace_premium_outlined,
   ),
+  'languages': _SectionLabel('languages', 'Languages', Icons.translate_outlined),
+  'stats': _SectionLabel('stats', 'Stats', Icons.bar_chart_outlined),
+  'contact': _SectionLabel('contact', 'Contact', Icons.alternate_email_outlined),
 };
 
 class _AnimationOption {
@@ -71,6 +74,9 @@ const _defaultSectionConfig = [
   {'key': 'projects', 'visible': true},
   {'key': 'education', 'visible': true},
   {'key': 'certifications', 'visible': true},
+  {'key': 'languages', 'visible': true},
+  {'key': 'stats', 'visible': true},
+  {'key': 'contact', 'visible': true},
 ];
 
 /// Lets the signed-in user pick a curated theme and control the order and
@@ -117,11 +123,18 @@ class _AppearanceScreenState extends State<AppearanceScreen> {
         if (avatarSize != null) _avatarSize = avatarSize;
         if (textSize != null) _textSize = textSize;
         if (rawSections != null && rawSections.isNotEmpty) {
-          _sections = rawSections
+          final stored = rawSections
               .cast<Map<String, dynamic>>()
               .where((s) => _sectionLabels.containsKey(s['key']))
               .map((s) => Map<String, dynamic>.from(s))
               .toList();
+          // Append any section introduced after this profile last saved its
+          // order, so new sections show up here instead of being invisible.
+          final knownKeys = stored.map((s) => s['key']).toSet();
+          final missing = _defaultSectionConfig
+              .where((s) => !knownKeys.contains(s['key']))
+              .map((s) => Map<String, dynamic>.from(s));
+          _sections = [...stored, ...missing];
         }
       });
     } catch (e) {
