@@ -51,37 +51,20 @@ class _HomeScreenState extends State<HomeScreen> {
     }
 
     final profileGroup = <_HomeItem>[
-      _HomeItem(Icons.badge_outlined, profileConfig.title, () => const ProfileScreen()),
+      _HomeItem(profileConfig.icon, profileConfig.title, () => const ProfileScreen()),
       _HomeItem(Icons.palette_outlined, 'Appearance', () => const AppearanceScreen()),
     ];
 
     final contentGroup = <_HomeItem>[
-      _HomeItem(Icons.bolt_outlined, skillsConfig.title, () => ResourceListScreen(config: skillsConfig)),
-      _HomeItem(
-        Icons.translate_outlined,
-        languagesConfig.title,
-        () => ResourceListScreen(config: languagesConfig),
-      ),
-      _HomeItem(
-        Icons.school_outlined,
-        educationConfig.title,
-        () => ResourceListScreen(config: educationConfig),
-      ),
-      _HomeItem(
-        Icons.workspace_premium_outlined,
-        certificationsConfig.title,
-        () => ResourceListScreen(config: certificationsConfig),
-      ),
-      _HomeItem(
-        Icons.business_center_outlined,
-        internshipsConfig.title,
-        () => ResourceListScreen(config: internshipsConfig),
-      ),
-      _HomeItem(
-        Icons.folder_outlined,
-        projectsConfig.title,
-        () => ResourceListScreen(config: projectsConfig),
-      ),
+      for (final config in [
+        skillsConfig,
+        languagesConfig,
+        educationConfig,
+        certificationsConfig,
+        internshipsConfig,
+        projectsConfig,
+      ])
+        _HomeItem(config.icon, config.title, () => ResourceListScreen(config: config)),
     ];
 
     final email = AuthService.instance.currentSession?.user.email;

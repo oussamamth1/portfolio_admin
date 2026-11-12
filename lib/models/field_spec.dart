@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart' show IconData, Icons;
+
 enum FieldType { text, multilineText, number, url, image, boolean, date, stringList }
 
 class FieldSpec {
@@ -21,6 +23,7 @@ class ResourceConfig {
     required this.fields,
     required this.titleField,
     this.subtitleField,
+    this.icon = Icons.article_outlined,
   });
 
   final String title;
@@ -28,6 +31,7 @@ class ResourceConfig {
   final List<FieldSpec> fields;
   final String titleField;
   final String? subtitleField;
+  final IconData icon;
 }
 
 final skillsConfig = ResourceConfig(
@@ -35,6 +39,7 @@ final skillsConfig = ResourceConfig(
   path: '/me/skills',
   titleField: 'subject',
   subtitleField: 'category',
+  icon: Icons.bolt_outlined,
   fields: const [
     FieldSpec(key: 'category', label: 'Category (e.g. Backend, Mobile)', type: FieldType.text, required: true),
     FieldSpec(key: 'subject', label: 'Skill name', type: FieldType.text, required: true),
@@ -48,6 +53,7 @@ final languagesConfig = ResourceConfig(
   title: 'Languages',
   path: '/me/languages',
   titleField: 'language',
+  icon: Icons.translate_outlined,
   fields: const [
     FieldSpec(key: 'language', label: 'Language', type: FieldType.text, required: true),
     FieldSpec(key: 'level', label: 'Proficiency (0-100)', type: FieldType.number, required: true),
@@ -60,6 +66,7 @@ final educationConfig = ResourceConfig(
   path: '/me/education',
   titleField: 'institution',
   subtitleField: 'degree',
+  icon: Icons.school_outlined,
   fields: const [
     FieldSpec(key: 'institution', label: 'Institution', type: FieldType.text, required: true),
     FieldSpec(key: 'degree', label: 'Degree', type: FieldType.text, required: true),
@@ -78,6 +85,7 @@ final certificationsConfig = ResourceConfig(
   path: '/me/certifications',
   titleField: 'name',
   subtitleField: 'issuer',
+  icon: Icons.workspace_premium_outlined,
   fields: const [
     FieldSpec(key: 'name', label: 'Name', type: FieldType.text, required: true),
     FieldSpec(key: 'issuer', label: 'Issuer', type: FieldType.text, required: true),
@@ -96,6 +104,7 @@ final internshipsConfig = ResourceConfig(
   path: '/me/internships',
   titleField: 'company',
   subtitleField: 'role',
+  icon: Icons.business_center_outlined,
   fields: const [
     FieldSpec(key: 'company', label: 'Company', type: FieldType.text, required: true),
     FieldSpec(key: 'role', label: 'Role', type: FieldType.text, required: true),
@@ -118,6 +127,7 @@ final projectsConfig = ResourceConfig(
   path: '/me/projects',
   titleField: 'title',
   subtitleField: 'status',
+  icon: Icons.folder_outlined,
   fields: const [
     FieldSpec(key: 'title', label: 'Title', type: FieldType.text, required: true),
     FieldSpec(key: 'company', label: 'Company / context', type: FieldType.text),
@@ -143,6 +153,7 @@ final profileConfig = ResourceConfig(
   title: 'Hero / Intro',
   path: '/me/profile',
   titleField: 'name',
+  icon: Icons.badge_outlined,
   fields: const [
     FieldSpec(key: 'name', label: 'Name', type: FieldType.text, required: true),
     FieldSpec(key: 'title', label: 'Title', type: FieldType.text, required: true),

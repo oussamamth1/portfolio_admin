@@ -97,40 +97,124 @@ class _ResourceListScreenState extends State<ResourceListScreen> {
           : _error != null
           ? Center(child: Text('Failed to load: $_error'))
           : _items.isEmpty
-          ? const Center(child: Text('Nothing here yet. Tap + to add one.'))
+          ? _EmptyState(config: widget.config)
           : RefreshIndicator(
               onRefresh: _load,
               child: _reorderable
                   ? ReorderableListView.builder(
+                      padding: const EdgeInsets.fromLTRB(16, 12, 16, 88),
                       itemCount: _items.length,
                       onReorder: _reorder,
-                      itemBuilder: (context, index) => _buildTile(_items[index], key: true),
+                      itemBuilder: (context, index) => _ResourceCard(
+                        key: ValueKey(_items[index]['id']),
+                        config: widget.config,
+                        item: _items[index],
+                        reorderable: true,
+                        index: index,
+                        onTap: () => _openForm(item: _items[index]),
+                        onDelete: () => _delete(_items[index]),
+                      ),
                     )
-                  : ListView.separated(
+                  : ListView.builder(
+                      padding: const EdgeInsets.fromLTRB(16, 12, 16, 88),
                       itemCount: _items.length,
-                      separatorBuilder: (_, _) => const Divider(height: 1),
-                      itemBuilder: (context, index) => _buildTile(_items[index]),
+                      itemBuilder: (context, index) => _ResourceCard(
+                        config: widget.config,
+                        item: _items[index],
+                        reorderable: false,
+                        index: index,
+                        onTap: () => _openForm(item: _items[index]),
+                        onDelete: () => _delete(_items[index]),
+                      ),
                     ),
             ),
     );
   }
+}
 
-  Widget _buildTile(Map<String, dynamic> item, {bool key = false}) {
-    return ListTile(
-      key: key ? ValueKey(item['id']) : null,
-      title: Text(item[widget.config.titleField]?.toString() ?? ''),
-      subtitle: widget.config.subtitleField != null
-          ? Text(item[widget.config.subtitleField]?.toString() ?? '')
-          : null,
-      onTap: () => _openForm(item: item),
-      trailing: Row(
+class _ResourceCard extends StatelessWidget {
+  const _ResourceCard({
+    super.key,
+    required this.config,
+    required this.item,
+    required this.reorderable,
+    required this.index,
+    required this.onTap,
+    required this.onDelete,
+  });
+
+  final ResourceConfig config;
+  final Map<String, dynamic> item;
+  final bool reorderable;
+  final int index;
+  final VoidCallback onTap;
+  final VoidCallback onDelete;
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 10),
+      child: Card(
+        clipBehavior: Clip.antiAlias,
+        child: ListTile(
+          leading: CircleAvatar(
+            backgroundColor: colorScheme.primaryContainer,
+            foregroundColor: colorScheme.onPrimaryContainer,
+            child: Icon(config.icon, size: 20),
+          ),
+          title: Text(
+            item[config.titleField]?.toString() ?? '',
+            style: const TextStyle(fontWeight: FontWeight.w600),
+          ),
+          subtitle: config.subtitleField != null
+              ? Text(item[config.subtitleField]?.toString() ?? '')
+              : null,
+          onTap: onTap,
+          trailing: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              IconButton(
+                icon: Icon(Icons.delete_outline, color: colorScheme.outline),
+                onPressed: onDelete,
+              ),
+              if (reorderable)
+                ReorderableDragStartListener(
+                  index: index,
+                  child: Icon(Icons.drag_handle, color: colorScheme.outline),
+                ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _EmptyState extends StatelessWidget {
+  const _EmptyState({required this.config});
+  final ResourceConfig config;
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    return Center(
+      child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          IconButton(
-            icon: const Icon(Icons.delete_outline),
-            onPressed: () => _delete(item),
+          CircleAvatar(
+            radius: 28,
+            backgroundColor: colorScheme.primaryContainer,
+            foregroundColor: colorScheme.onPrimaryContainer,
+            child: Icon(config.icon, size: 28),
           ),
-          if (_reorderable) const Icon(Icons.drag_handle),
+          const SizedBox(height: 16),
+          Text('No ${config.title.toLowerCase()} yet', style: Theme.of(context).textTheme.titleMedium),
+          const SizedBox(height: 4),
+          Text(
+            'Tap + to add one.',
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: colorScheme.outline),
+          ),
         ],
       ),
     );
