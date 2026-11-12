@@ -14,6 +14,9 @@ const _themeOptions = [
   _ThemeOption('emerald', 'Emerald', Color(0xFF10B981)),
   _ThemeOption('crimson', 'Crimson', Color(0xFFF43F5E)),
   _ThemeOption('azure', 'Azure', Color(0xFF38BDF8)),
+  _ThemeOption('rose', 'Rose', Color(0xFFEC4899)),
+  _ThemeOption('slate', 'Slate', Color(0xFF94A3B8)),
+  _ThemeOption('ocean', 'Ocean', Color(0xFF0EA5B5)),
 ];
 
 class _SectionLabel {
@@ -47,6 +50,19 @@ const _animationOptions = [
   _AnimationOption('fade', 'Fade in', Icons.auto_awesome_outlined),
   _AnimationOption('particles', 'Particles', Icons.scatter_plot_outlined),
   _AnimationOption('matrix', 'Matrix rain', Icons.code_outlined),
+  _AnimationOption('tilt', 'Tilt', Icons.threed_rotation_outlined),
+];
+
+class _SizeOption {
+  const _SizeOption(this.key, this.label);
+  final String key;
+  final String label;
+}
+
+const _sizeOptions = [
+  _SizeOption('small', 'Small'),
+  _SizeOption('medium', 'Medium'),
+  _SizeOption('large', 'Large'),
 ];
 
 const _defaultSectionConfig = [
@@ -72,6 +88,8 @@ class _AppearanceScreenState extends State<AppearanceScreen> {
   String? _error;
   String _theme = 'amber';
   String _animation = 'none';
+  String _avatarSize = 'medium';
+  String _textSize = 'medium';
   late List<Map<String, dynamic>> _sections;
 
   @override
@@ -90,10 +108,14 @@ class _AppearanceScreenState extends State<AppearanceScreen> {
       final profile = await ApiClient.instance.getOne('/me/profile');
       final theme = profile['theme'] as String?;
       final animation = profile['animation'] as String?;
+      final avatarSize = profile['avatar_size'] as String?;
+      final textSize = profile['text_size'] as String?;
       final rawSections = profile['section_config'] as List<dynamic>?;
       setState(() {
         if (theme != null) _theme = theme;
         if (animation != null) _animation = animation;
+        if (avatarSize != null) _avatarSize = avatarSize;
+        if (textSize != null) _textSize = textSize;
         if (rawSections != null && rawSections.isNotEmpty) {
           _sections = rawSections
               .cast<Map<String, dynamic>>()
@@ -115,6 +137,8 @@ class _AppearanceScreenState extends State<AppearanceScreen> {
       await ApiClient.instance.update('/me/profile', {
         'theme': _theme,
         'animation': _animation,
+        'avatar_size': _avatarSize,
+        'text_size': _textSize,
         'section_config': _sections,
       });
       if (mounted) {
@@ -221,6 +245,20 @@ class _AppearanceScreenState extends State<AppearanceScreen> {
                   }).toList(),
                 ),
                 const SizedBox(height: 28),
+                Text('Avatar size', style: Theme.of(context).textTheme.titleMedium),
+                const SizedBox(height: 12),
+                _SizePicker(
+                  value: _avatarSize,
+                  onChanged: (value) => setState(() => _avatarSize = value),
+                ),
+                const SizedBox(height: 28),
+                Text('Text size', style: Theme.of(context).textTheme.titleMedium),
+                const SizedBox(height: 12),
+                _SizePicker(
+                  value: _textSize,
+                  onChanged: (value) => setState(() => _textSize = value),
+                ),
+                const SizedBox(height: 28),
                 Text('Section order', style: Theme.of(context).textTheme.titleMedium),
                 const SizedBox(height: 4),
                 Text(
@@ -261,6 +299,24 @@ class _AppearanceScreenState extends State<AppearanceScreen> {
                 ),
               ],
             ),
+    );
+  }
+}
+
+class _SizePicker extends StatelessWidget {
+  const _SizePicker({required this.value, required this.onChanged});
+
+  final String value;
+  final ValueChanged<String> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    return SegmentedButton<String>(
+      segments: _sizeOptions
+          .map((o) => ButtonSegment(value: o.key, label: Text(o.label)))
+          .toList(),
+      selected: {value},
+      onSelectionChanged: (selection) => onChanged(selection.first),
     );
   }
 }
